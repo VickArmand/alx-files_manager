@@ -9,7 +9,7 @@ class RedisClient {
     }
     isAlive() {
         let isConnected = false;
-        this.client.on('connect', (err) => {
+        this.client.on('connect', () => {
            isConnected = true; 
         });
         return isConnected;
