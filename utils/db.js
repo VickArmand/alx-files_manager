@@ -28,11 +28,17 @@ class DBClient {
   async nbFiles() {
     return this.db.collection('files').countDocuments();
   }
+
   async findByEmail(email) {
-    return this.db.collection('users').findOne({'email': email})
+    return this.db.collection('users').findOne({ email });
   }
+
+  async findById(id) {
+    return this.db.collection('users').findOne({ _id: id });
+  }
+
   async store(email, password) {
-    return this.db.collection('users').insertOne({'email': email, 'password': password})
+    return this.db.collection('users').insertOne({ email, password });
   }
 }
 const dbclient = new DBClient();
