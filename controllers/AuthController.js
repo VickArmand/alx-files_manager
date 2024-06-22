@@ -25,7 +25,7 @@ class AuthController {
 
   static getDisconnect(req, res) {
     const token = req.header['X-Token'];
-    if (!token) {
+    if (token) {
       const key = `auth_${token}`;
       const userId = redisClient.get(key);
       if (!userId) return res.status(401).end({ error: 'Unauthorized' });
@@ -37,7 +37,7 @@ class AuthController {
 
   static getMe(req, res) {
     const token = req.header['X-Token'];
-    if (!token) {
+    if (token) {
       const key = `auth_${token}`;
       const userId = redisClient.get(key);
       if (!userId) return res.status(401).end({ error: 'Unauthorized' });
