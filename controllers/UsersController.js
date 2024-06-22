@@ -6,18 +6,18 @@ class UsersController {
         const password = req.body.password;
         res.statusCode = 400;
         if (!email) {
-            res.end({'error':'Missing email'});
+            return res.end({'error':'Missing email'});
         }
         else if (!password) {
-            res.end({'error': 'Missing password'});
+            return res.end({'error': 'Missing password'});
         }
         else if (dbclient.findByEmail(email)) {
-            res.end({'error': 'Already exist'})
+            return res.end({'error': 'Already exist'})
         }
         hashed_pwd = sha1(password)
         new_id = dbclient.store(email, hashed_pwd)
         res.statusCode = 201;
-        res.end({'id': new_id, 'email': email})
+        return res.end({'id': new_id, 'email': email})
     }
 }
 export default UsersController;
