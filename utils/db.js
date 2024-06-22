@@ -32,7 +32,7 @@ class DBClient {
     return this.db.collection('users').findOne({'email': email})
   }
   async store(email, password) {
-    return this.db.collection('users').insert({'email': email, 'password': password})
+    return this.db.collection('users').insertOne({'email': email, 'password': password})
   }
 }
 const dbclient = new DBClient();
