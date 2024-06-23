@@ -29,6 +29,20 @@ class DBClient {
     return this.db.collection('files').countDocuments();
   }
 
+  async findByParentID(parentID) {
+    return this.db.collection('files').findOne({ parentId: parentID });
+  }
+
+  async findByParentIDandType(parentID, type) {
+    return this.db.collection('files').findOne({ parentId: parentID, type });
+  }
+
+  async saveFile(name, type, data, parentId, isPublic, filePath, userId) {
+    return this.db.collection('files').insertOne({
+      name, type, data, parentId, isPublic, filePath, userId,
+    });
+  }
+
   async findByEmail(email) {
     return this.db.collection('users').findOne({ email });
   }

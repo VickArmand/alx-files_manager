@@ -2,7 +2,7 @@ import sha1 from 'sha1';
 import dbclient from '../utils/db';
 
 class UsersController {
-  static postNew(req, res) {
+  static async postNew(req, res) {
     const { email } = req.body;
     const { password } = req.body;
     if (!email) {
@@ -15,7 +15,7 @@ class UsersController {
       return res.status(400).end({ error: 'Already exist' });
     }
     const hashedPwd = sha1(password);
-    const newId = dbclient.store(email, hashedPwd).id;
+    const newId = await dbclient.store(email, hashedPwd).id;
     return res.status(201).end({ id: newId, email });
   }
 }
