@@ -25,6 +25,18 @@ class DBClient {
     return this.db.collection('users').countDocuments();
   }
 
+  async findByEmail(email) {
+    return this.db.collection('users').findOne({ email });
+  }
+
+  async findById(id) {
+    return this.db.collection('users').findOne({ _id: id });
+  }
+
+  async store(email, password) {
+    return this.db.collection('users').insertOne({ email, password });
+  }
+
   async nbFiles() {
     return this.db.collection('files').countDocuments();
   }
@@ -55,20 +67,20 @@ class DBClient {
     });
   }
 
-  async retrieveFile(userId) {
+  async retrieveFileByUser(userId) {
     return this.db.collection('files').find({ userId });
   }
 
-  async findByEmail(email) {
-    return this.db.collection('users').findOne({ email });
+  async findFileById(id) {
+    return this.db.collection('files').find({ _id: id });
   }
 
-  async findById(id) {
-    return this.db.collection('users').findOne({ _id: id });
+  async publishFile(id) {
+    return this.db.collection('files').updateOne({ _id: id }, { isPublic: true });
   }
 
-  async store(email, password) {
-    return this.db.collection('users').insertOne({ email, password });
+  async unpublishFile(id) {
+    return this.db.collection('files').updateOne({ _id: id }, { isPublic: false });
   }
 }
 const dbclient = new DBClient();

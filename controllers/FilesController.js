@@ -46,7 +46,7 @@ class FilesController {
     const key = `auth_${token}`;
     const userId = req.params.id;
     if (!userId || userId !== redisClient.get(key)) return res.status(401).end({ error: 'Unauthorized' });
-    const file = await dbclient.retrieveFile(userId);
+    const file = await dbclient.retrieveFileByUser(userId);
     if (!file) return res.status(404).end({ error: 'Not found' });
     return res.end(file);
   }
@@ -58,6 +58,24 @@ class FilesController {
     const page = parseInt(req.params.page, 10) || 0;
     const files = await dbclient.paginatewithParentID(parentID, 20, page + 1);
     return res.end(files);
+  }
+
+  static async putPublish(req, res) {
+    const { id } = req.params;
+    const token = req.header['X-Token'];
+    if (!token) return res.status(401).end({ error: 'Unauthorized' });
+    if (!await dbclient.findFileById(id)) return res.status(404).end({ error: 'Not found' });
+    const file = dbclient.publishFile(id);
+    return res.status(200).end(file);
+  }
+
+  static async putUnpublish(req, res) {
+    const { id } = req.params;
+    const token = req.header['X-Token'];
+    if (!token) return res.status(401).end({ error: 'Unauthorized' });
+    if (!await dbclient.findFileById(id)) return res.status(404).end({ error: 'Not found' });
+    const file = dbclient.unpublishFile(id);
+    return res.status(200).end(file);
   }
 }
 export default FilesController;
