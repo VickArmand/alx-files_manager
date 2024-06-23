@@ -30,11 +30,21 @@ class DBClient {
   }
 
   async findByParentID(parentID) {
-    return this.db.collection('files').findOne({ parentId: parentID });
+    return this.db.collection('files').find({ parentId: parentID });
   }
-
+  async paginatewithParentID(parentID, max, page) {
+    return this.db.collection('files').aggregate([
+      {
+        '$match': { parentId: parentID },
+        '$limit': max,
+        '$facet': {
+          metadata: [{'$addFields': {page}}]
+        }
+      }
+    ]);
+  }
   async findByParentIDandType(parentID, type) {
-    return this.db.collection('files').findOne({ parentId: parentID, type });
+    return this.db.collection('files').find({ parentId: parentID, type });
   }
 
   async saveFile(name, type, data, parentId, isPublic, filePath, userId) {
@@ -42,7 +52,9 @@ class DBClient {
       name, type, data, parentId, isPublic, filePath, userId,
     });
   }
-
+  async retrieveFile(userId) {
+    return this.db.collection('files').find({userId});
+  }
   async findByEmail(email) {
     return this.db.collection('users').findOne({ email });
   }
