@@ -39,25 +39,23 @@ class FilesController {
     const record = await dbclient.saveFile(name, type, data, parentId, isPublic, filepath, userId);
     return res.status(201).end({ record });
   }
-  static async getIndex() {
+
+  static async getIndex(req, res) {
     const token = req.header['X-Token'];
-    if (!token)
-        return res.status(401).end({ error: 'Unauthorized' });
+    if (!token) return res.status(401).end({ error: 'Unauthorized' });
     const key = `auth_${token}`;
     const userId = req.params.id;
-    if (!userId || userId !== redisClient.get(key))
-        return res.status(401).end({ error: 'Unauthorized' });
+    if (!userId || userId !== redisClient.get(key)) return res.status(401).end({ error: 'Unauthorized' });
     const file = await dbclient.retrieveFile(userId);
-    if (!file)
-        return res.status(404).end({ error: 'Not found' });
+    if (!file) return res.status(404).end({ error: 'Not found' });
     return res.end(file);
   }
-  static async getShow() {
+
+  static async getShow(req, res) {
     const token = req.header['X-Token'];
-    if (!token)
-        return res.status(401).end({ error: 'Unauthorized' });
+    if (!token) return res.status(401).end({ error: 'Unauthorized' });
     const parentID = req.params.parentId || '0';
-    const page = parseInt(req.params.page) || 0;
+    const page = parseInt(req.params.page, 10) || 0;
     const files = await dbclient.paginatewithParentID(parentID, 20, page + 1);
     return res.end(files);
   }
