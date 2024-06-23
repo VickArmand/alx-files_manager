@@ -20,17 +20,17 @@ class FilesController {
     const key = `auth_${token}`;
     const userId = redisClient.get(key);
     if (!userId) return res.status(401).end({ error: 'Unauthorized' });
-    const user = dbclient.findById(userId);
     if (!name) return res.status(400).end({ error: 'Missing name' });
     if (!type || !acceptedTypes.includes(type)) return res.status(400).end({ error: 'Missing type' });
-    if (!data && type != 'folder') return res.status(400).end({ error: 'Missing data' });
+    if (!data && type !== 'folder') return res.status(400).end({ error: 'Missing data' });
     if (parentId) {
       const file = dbclient.findByParentID(parentId);
       if (!file) return res.status(400).end({ error: 'Parent not found' });
       if (dbclient.findByParentIDandType(parentId, 'folder')) return res.status(400).end({ error: 'Parent is not a folder' });
     }
     if (type === 'folder') {
-      const record = await dbclient.saveFile(name, type, data, parentId, isPublic, undefined, userId);
+      const record = await dbclient.saveFile(name,
+        type, data, parentId, isPublic, undefined, userId);
       return res.status(201).end({ record });
     }
     const filename = uuidV4().toString();
