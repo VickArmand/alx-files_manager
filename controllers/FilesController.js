@@ -1,5 +1,6 @@
 import { uuidV4 } from 'mongodb/lib/core/utils';
 import fs from 'fs';
+import mime from 'mime-types';
 import dbclient from '../utils/db';
 import redisClient from '../utils/redis';
 
@@ -76,6 +77,26 @@ class FilesController {
     if (!await dbclient.findFileById(id)) return res.status(404).end({ error: 'Not found' });
     const file = dbclient.unpublishFile(id);
     return res.status(200).end(file);
+  }
+
+  static async getFile(req, res) {
+    const { id } = req.params;
+    const token = req.header['X-Token'];
+    if (!token) return res.status(401).end({ error: 'Unauthorized' });
+    const file = await dbclient.findFileById(id);
+    if (!file) return res.status(404).end({ error: 'Not found' });
+    if (file.type === 'folder') return res.status(400).end({ error: "A folder doesn't have content" });
+    fs.exists(file.filepath, (exists) => {
+      if (!exists) return res.status(404).end({ error: 'Not found' });
+
+      const mimeType = mime.lookup(file.filepath);
+      fs.readFile(file.filepath, (err, data) => {
+        res.contentType(mimeType);
+        return res.end(data);
+      });
+      return res.end();
+    });
+    return res.end();
   }
 }
 export default FilesController;
