@@ -1,4 +1,5 @@
 /** */
+import { promisify } from 'util';
 import redis from 'redis';
 
 class RedisClient {
@@ -18,15 +19,18 @@ class RedisClient {
   }
 
   async get(key) {
-    return this.client.get(key);
+    const getval = promisify(this.client.get).bind(this.client);
+    return getval(key);
   }
 
   async set(key, value, duration) {
-    return this.client.set(key, value, { EX: duration });
+    const setval = promisify(this.client.setex).bind(this.client);
+    return setval(key, duration, value);
   }
 
   async del(key) {
-    return this.client.del(key);
+    const delkey = promisify(this.client.del).bind(this.client);
+    return delkey(key);
   }
 }
 const redisClient = new RedisClient();
