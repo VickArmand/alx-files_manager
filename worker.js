@@ -1,5 +1,5 @@
 import Queue from 'bull';
-import img from 'image-thumbnail';
+// import img from 'image-thumbnail';
 
 const fileQueue = new Queue('video transcoding', 'redis://127.0.0.1:6379');
 fileQueue((job, done) => {
