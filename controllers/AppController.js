@@ -6,9 +6,9 @@ class AppController {
     if (redisClient.isAlive() && dbClient.isAlive()) res.json({ redis: true, db: true });
   }
 
-  static getStats(req, res) {
-    const numfiles = dbClient.nbFiles();
-    const numusers = dbClient.nbUsers();
+  static async getStats(req, res) {
+    const numfiles = await dbClient.nbFiles();
+    const numusers = await dbClient.nbUsers();
     res.json({ users: numusers, files: numfiles });
   }
 }
