@@ -49,7 +49,7 @@ class FilesController {
     if (!userId || userId !== redisClient.get(key)) return res.status(401).end({ error: 'Unauthorized' });
     const file = await dbclient.retrieveFileByUser(userId);
     if (!file) return res.status(404).end({ error: 'Not found' });
-    return res.end(file);
+    return res.json(file);
   }
 
   static async getShow(req, res) {
@@ -58,7 +58,7 @@ class FilesController {
     const parentID = req.params.parentId || '0';
     const page = parseInt(req.params.page, 10) || 0;
     const files = await dbclient.paginatewithParentID(parentID, 20, page + 1);
-    return res.end(files);
+    return res.json(files);
   }
 
   static async putPublish(req, res) {
@@ -92,11 +92,11 @@ class FilesController {
       const mimeType = mime.lookup(file.filepath);
       fs.readFile(file.filepath, (err, data) => {
         res.contentType(mimeType);
-        return res.end(data);
+        return res.json(data);
       });
-      return res.end();
+      return res.json();
     });
-    return res.end();
+    return res.json();
   }
 }
 export default FilesController;
