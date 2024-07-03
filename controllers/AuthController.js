@@ -39,7 +39,7 @@ class AuthController {
   }
 
   static getMe(req, res) {
-    const token = req.header['X-Token'];
+    const token = req.headers['x-token'];
     if (token) {
       const key = `auth_${token}`;
       const userId = redisClient.get(key);

@@ -8,7 +8,7 @@ const FOLDERPATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
 class FilesController {
   static async postUpload(req, res) {
-    const token = req.header['X-Token'];
+    const token = req.headers['x-token'];
     const { name } = req.body;
     const { type } = req.body;
     const { parentId } = req.body;
@@ -42,7 +42,7 @@ class FilesController {
   }
 
   static async getIndex(req, res) {
-    const token = req.header['X-Token'];
+    const token = req.headers['x-token'];
     if (!token) return res.status(401).end({ error: 'Unauthorized' });
     const key = `auth_${token}`;
     const userId = req.params.id;
@@ -53,7 +53,7 @@ class FilesController {
   }
 
   static async getShow(req, res) {
-    const token = req.header['X-Token'];
+    const token = req.headers['x-token'];
     if (!token) return res.status(401).end({ error: 'Unauthorized' });
     const parentID = req.params.parentId || '0';
     const page = parseInt(req.params.page, 10) || 0;
@@ -63,7 +63,7 @@ class FilesController {
 
   static async putPublish(req, res) {
     const { id } = req.params;
-    const token = req.header['X-Token'];
+    const token = req.headers['x-token'];
     if (!token) return res.status(401).end({ error: 'Unauthorized' });
     if (!await dbclient.findFileById(id)) return res.status(404).end({ error: 'Not found' });
     const file = dbclient.publishFile(id);
@@ -72,7 +72,7 @@ class FilesController {
 
   static async putUnpublish(req, res) {
     const { id } = req.params;
-    const token = req.header['X-Token'];
+    const token = req.headers['x-token'];
     if (!token) return res.status(401).end({ error: 'Unauthorized' });
     if (!await dbclient.findFileById(id)) return res.status(404).end({ error: 'Not found' });
     const file = dbclient.unpublishFile(id);
@@ -81,7 +81,7 @@ class FilesController {
 
   static async getFile(req, res) {
     const { id } = req.params;
-    const token = req.header['X-Token'];
+    const token = req.headers['x-token'];
     if (!token) return res.status(401).end({ error: 'Unauthorized' });
     const file = await dbclient.findFileById(id);
     if (!file) return res.status(404).end({ error: 'Not found' });
