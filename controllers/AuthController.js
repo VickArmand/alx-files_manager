@@ -5,22 +5,25 @@ import redisClient from '../utils/redis';
 
 class AuthController {
   static getConnect(req, res) {
-    const authHeader = req.header.Authorization;
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
     const credentials = authHeader.split(':');
     const email = credentials[0];
     const password = credentials[1];
     const user = dbclient.findByEmail(email);
     if (!email || !password || !user) {
-      return res.status(401).end({ error: 'Unauthorized' });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
     const hashedPwd = sha1(password);
     if (hashedPwd === user.password) {
       const token = uuidV4().toString();
       const key = `auth_${token}`;
       redisClient.set(key, user.id, 24 * 60 * 60);
-      return res.status(200).end({ token });
+      return res.status(200).json({ token });
     }
-    return res.status(401).end({ error: 'Unauthorized' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   static getDisconnect(req, res) {
@@ -28,11 +31,11 @@ class AuthController {
     if (token) {
       const key = `auth_${token}`;
       const userId = redisClient.get(key);
-      if (!userId) return res.status(401).end({ error: 'Unauthorized' });
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
       redisClient.del(key);
-      return res.status(204).end();
+      return res.status(204).json();
     }
-    return res.status(401).end({ error: 'Unauthorized' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   static getMe(req, res) {
@@ -40,11 +43,11 @@ class AuthController {
     if (token) {
       const key = `auth_${token}`;
       const userId = redisClient.get(key);
-      if (!userId) return res.status(401).end({ error: 'Unauthorized' });
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
       const user = dbclient.findById(userId);
-      return res.end({ id: userId, email: user.email });
+      return res.json({ id: userId, email: user.email });
     }
-    return res.status(401).end({ error: 'Unauthorized' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 }
 
